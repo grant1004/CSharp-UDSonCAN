@@ -22,7 +22,8 @@ keep-alive, progress reporting and cancellation.
                                              │
    IsoTp/      IsoTpChannel  (ISO 15765-2: SF/FF/CF/FC, block size + STmin, 11/29-bit)
                                              │
-   Can/        ICanBus  ──  VectorCanBus (vxlapi) │ LoopbackCanBus (in-process, for tests)
+   Can/        ICanBus  ──  LoopbackCanBus (in-process, for tests)
+               └ UdsOnCan.Vector/ VectorCanBus (vxlapi_NET — separate project, needs the DLL)
 ```
 
 Each layer depends only on the one below. Swap `ICanBus` to change hardware vendor
@@ -42,9 +43,13 @@ during erase and multi-frame ISO-TP transfers.
 
 Three things are ECU/OEM-specific and are deliberately left to you:
 
-1. **CAN hardware** — finish `Can/VectorCanBus.cs` (the vxlapi port/transmit/receive
-   bodies; the call sequence is documented in the file). Needs the Vector XL Driver
-   Library + a licence. Any other vendor: implement `ICanBus` the same way.
+1. **CAN hardware** — the Vector binding lives in `src/UdsOnCan.Vector`
+   (`VectorCanBus : ICanBus`, built on the `vxlapi_NET` managed wrapper — no
+   P/Invoke). It needs `vxlapi_NET.dll` from the Vector XL Driver Library: drop it
+   in `libs/` (see `libs/README.md`), add the project to your solution, and build.
+   It's kept out of the default solution so the core + demo build without the
+   proprietary DLL. `VectorCanBus.ListChannels()` enumerates channels for a GUI
+   picker. Any other vendor: implement `ICanBus` the same way.
 2. **Seed → key** — supply the real algorithm via `FlashOptions.SeedKey`
    (`(level, seed) => key`).
 3. **Routine IDs / formats** — set `FlashOptions.EraseRoutineId`,
@@ -92,7 +97,7 @@ the background throughout.
 | Implemented | Stub / your part |
 |---|---|
 | ISO-TP normal addressing (SF/FF/CF/FC, BS, STmin, 11/29-bit) | ISO-TP extended / normal-fixed addressing |
-| UDS client + 0x78 loop + Tester Present + the flashing services | `VectorCanBus` vxlapi bodies |
+| UDS client + 0x78 loop + Tester Present + the flashing services | `UdsOnCan.Vector` (vxlapi_NET) — build needs your `libs/vxlapi_NET.dll` |
 | Intel HEX parser, segment merge | seed→key algorithm (proprietary) |
 | Default + custom flash sequences, progress, cancellation | erase/check routine IDs & data formats |
 | In-process simulated ECU + virtual bus (demo) | — |

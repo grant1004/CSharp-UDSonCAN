@@ -1,0 +1,28 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <!-- Windows-only: vxlapi_NET is a Windows assembly. net8.0-windows maximises
+         compatibility with the Vector-shipped wrapper. -->
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <LangVersion>latest</LangVersion>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <AssemblyName>UdsOnCan.Vector</AssemblyName>
+    <RootNamespace>UdsOnCan.Vector</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="../UdsOnCan/UdsOnCan.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- Vector's proprietary managed wrapper — NOT redistributed in this repo.
+         Copy vxlapi_NET.dll from your Vector XL Driver Library install into ../../libs/.
+         (That folder is .gitignore'd for *.dll.) -->
+    <Reference Include="vxlapi_NET">
+      <HintPath>../../libs/vxlapi_NET.dll</HintPath>
+      <Private>true</Private>
+    </Reference>
+  </ItemGroup>
+
+</Project>

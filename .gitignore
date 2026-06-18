@@ -13,3 +13,6 @@ obj/
 # OS
 Thumbs.db
 .DS_Store
+
+# Proprietary Vector wrapper — supply your own copy (see libs/README.md)
+libs/*.dll
